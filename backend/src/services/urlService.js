@@ -1,17 +1,20 @@
 import { saveUrl, findByShortCode, incrementClickCount } from "../repositories/urlRepository.js";
 import { client } from "../config/redis.js";
+import getNextSequence from "../utils/generateId.js";
+import encodeBase62 from "../utils/base62.js";
 
-const createShortUrlService = async(longUrl) => {
-  let shortCode = Math.random().toString(36).substring(2, 8);
-  while(await findByShortCode(shortCode)){
-    shortCode = Math.random().toString(36).substring(2, 8);
-  }
+const createShortUrlService = async (longUrl) => {
+  const id = await getNextSequence("url");
+  
+  const shortCode = encodeBase62(id);
 
   await saveUrl(shortCode, longUrl);
 
   const shortUrl = `${process.env.BASE_URL}/${shortCode}`;
-  return {  shortUrl };
+
+  return { shortUrl };
 }
+
 
 const findUrlByShortCode = async(shortCode) => {
    //  Check cache
