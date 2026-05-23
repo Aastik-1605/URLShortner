@@ -1,42 +1,27 @@
 import {createShortUrlService, findUrlByShortCode, getUrlStats} from "../services/urlService.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
-const createShortUrlController = async (req, res) => {
-  const { longUrl } = req.body;
-  if (!longUrl || typeof longUrl !== "string") {
-    return res.status(400).json({ error: "Invalid URL" });
-  }
+const createShortUrlController = asyncHandler(async (req, res) => {
+  const result = await createShortUrlService(req.body.longUrl);
 
-  try {
-    new URL(longUrl);
-  } catch (err) {
-    return res.status(400).json({ error: "Invalid URL format" });
-  }
-  
-  const result = await createShortUrlService(longUrl);
   res.status(201).json(result);
-}
+});
 
-const getOriginalUrl = async (req, res) => {
-  const { shortCode } = req.params;
+
+
+const getOriginalUrl = asyncHandler(async (req, res) => {
   
-  const urlData = await findUrlByShortCode(shortCode);
-
-  if(!urlData){
-    return res.status(404).json({error: "Url not found"});
-  }
+  const urlData = await findUrlByShortCode(req.params.shortCode);
 
   res.redirect(urlData.longUrl);
-}
+});
 
-const getUrlStatsController = async (req, res) => {
-  const { shortCode } = req.params;
+
+const getUrlStatsController = asyncHandler(async (req, res) => {
  
-  const stats = await getUrlStats(shortCode);
-  if(!stats){
-    return res.status(404).json({error: "Stats not found"});
-  }
+  const stats = await getUrlStats(req.params.shortCode);
 
   return res.status(200).json(stats);
-}
+});
 
 export { createShortUrlController, getOriginalUrl, getUrlStatsController };
