@@ -6,6 +6,7 @@ import errorHandler from './middlewares/errorMiddleware.js';
 import mongoose from 'mongoose';
 import { client } from './config/redis.js';
 import requestLogger from './middlewares/requestLogger.js';
+import requestId from './middlewares/requestId.js';
 
 const app = express();
 
