@@ -1,6 +1,9 @@
 import { client } from "../config/redis.js";
 
 const rateLimiter = async (req, res, next) => {
+  if (!client.isReady) {
+    return next();
+  }
   try {
     const ip = req.ip;
 
