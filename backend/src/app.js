@@ -7,6 +7,8 @@ import mongoose from 'mongoose';
 import { client } from './config/redis.js';
 import requestLogger from './middlewares/requestLogger.js';
 import requestId from './middlewares/requestId.js';
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./config/swagger.js";
 
 const app = express();
 
@@ -31,9 +33,14 @@ app.get('/health', (req, res) => {
   });
 });
 
+
 // apply rate limiter AFTER health
 // API routes
 app.use("/api", rateLimiter, urlRoutes);
+
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 // Redirect routes (NO prefix)
 app.use("/", rateLimiter, redirectRoutes);
